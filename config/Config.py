@@ -11,7 +11,7 @@ class DatabaseConfig:
     name: str = os.getenv("DB_NAME")
 
     def __post_init__(self):
-        self.connect: str = f"jdbc:postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
+        self.connect: str = f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
 
 
 database_config = DatabaseConfig()
