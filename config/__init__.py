@@ -1,0 +1,1 @@
+from config.Config import app_config, database_config
