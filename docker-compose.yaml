@@ -49,4 +49,4 @@ volumes:
 
 networks:
   flask-test:
-    external: true
+    external: false

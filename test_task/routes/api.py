@@ -1,10 +1,8 @@
 from flask import Blueprint, jsonify, request, make_response
-from sqlalchemy import select, func
 from loguru import logger
 
 from database import db
 from service import UserService, AchievementService, UserAchievementService
-from database.models import User, Achievement, UserAchievement
 
 
 api = Blueprint('api', __name__)

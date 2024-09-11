@@ -21,6 +21,14 @@ class GetUserError(Exception):
 
     def __str__(self) -> str:
         return f"get user ({self.username}) error: {self.error_message}"
+    
+
+class GetStatError(Exception):
+    def __init__(self, error_message: str, username: str) -> None:
+        super().__init__(error_message, username)
+
+    def __str__(self) -> str:
+        return f"get user ({self.username}) error: {self.error_message}"
 
 
 class UserService:

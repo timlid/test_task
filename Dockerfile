@@ -8,7 +8,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 COPY . .
 
-RUN apt-get update && apt-get install
+RUN apt-get update && apt-get install -y wget postgresql-client
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -U --no-cache-dir \
@@ -19,4 +19,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 RUN wget -O /usr/local/share/ca-certificates/global-bundle.pem https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem && \
     update-ca-certificates
 
-CMD ["sh", "-c", "flask db migrate -m 'init migration' && flask db upgrade && flask run --host=0.0.0.0 --port=8000"]
+COPY entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]

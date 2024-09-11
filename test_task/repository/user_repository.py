@@ -34,7 +34,7 @@ class UserRepository:
             result = self.db.session.execute(query).scalar_one_or_none()
 
             if result is None:
-                raise NoneTypeResult
+                raise NoneTypeResult()
             
             return result
 
@@ -59,6 +59,7 @@ class UserRepository:
     
         except Exception as err:
             logger.error(err)
+            self.db.session.rollback()
             raise DatabaseRequestError(err)
         
     def find_one_with_relation(self, data: dict) -> dict:
