@@ -2,7 +2,9 @@ from database.database import db
 from sqlalchemy import Column, Integer, ForeignKey, TIMESTAMP
 import datetime
 
-class UserAchievement(db.Model):
+from sqlalchemy_serializer import SerializerMixin
+
+class UserAchievement(db.Model, SerializerMixin):
     __tablename__ = 'user_achievements'
 
     user_id = Column(Integer, ForeignKey('users.user_id'), primary_key=True)

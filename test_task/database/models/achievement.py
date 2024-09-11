@@ -2,8 +2,9 @@ from database.database import db
 from sqlalchemy import Column, String, Integer, Text, CheckConstraint, TIMESTAMP
 
 import datetime
+from sqlalchemy_serializer import SerializerMixin
 
-class Achievement(db.Model):
+class Achievement(db.Model, SerializerMixin):
     __tablename__ = 'achievements'
 
     achievement_id = Column(Integer, primary_key=True)

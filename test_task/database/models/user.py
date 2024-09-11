@@ -15,5 +15,14 @@ class User(db.Model, SerializerMixin):
     achievements = db.relationship('Achievement', secondary='user_achievements', 
                                    backref=db.backref('users', lazy='dynamic'))
     
-    def __str__(self) -> str:
-        return f'User : {self.username}'
+    def to_dict(self) -> dict:
+        return {
+            "user_id": self.user_id,
+            "username": self.username,
+            "language": self.language,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at
+        }
+    
+    def __repr__(self):
+        return f'<User {self.user_id}>'
