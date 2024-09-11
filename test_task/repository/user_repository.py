@@ -43,10 +43,11 @@ class UserRepository:
              raise DatabaseRequestError(err)
         
     def insert_one(self, data: dict):
+        logger.debug(data)
         try:
             new_user = User(
                 username=data.get('username'),
-                language=data.get('language'),
+                user_language=data.get('user_language'),
                 created_at=func.now(),
                 updated_at=func.now()
             )
@@ -67,7 +68,7 @@ class UserRepository:
             .join(Achievement, AchievementTranslate.achievement_id == Achievement.achievement_id)\
             .join(UserAchievement, UserAchievement.achievement_id == Achievement.achievement_id)\
             .join(User, User.user_id == UserAchievement.user_id)\
-            .filter(UserAchievement.user_id == user.to_dict()['user_id'], AchievementTranslate.achievement_language == user.language)\
+            .filter(UserAchievement.user_id == user.to_dict()['user_id'], AchievementTranslate.achievement_language == user.user_language)\
             .all()
         
         return user_achievements

@@ -8,7 +8,7 @@ class User(db.Model, SerializerMixin):
 
     user_id = Column(Integer, primary_key=True)
     username = Column(String(128), unique=True, nullable=False)
-    language = Column(String(128), nullable=False)
+    user_language = Column(String(128), nullable=False)
     created_at = Column(TIMESTAMP, default=datetime.timezone.utc)
     updated_at = Column(TIMESTAMP, default=datetime.timezone.utc, onupdate=datetime.timezone.utc)
 
@@ -19,7 +19,7 @@ class User(db.Model, SerializerMixin):
         return {
             "user_id": self.user_id,
             "username": self.username,
-            "language": self.language,
+            "user_language": self.user_language,
             "created_at": self.created_at,
             "updated_at": self.updated_at
         }

@@ -42,14 +42,14 @@ def create_achievement():
     except Exception as err:
         db.session.rollback()
         return jsonify({'error': str(err)}), 500
-    
-@api.route(f"/api/{api_version}/user_achievements/", methods=['POST'])
-def attach_achievement():
+
+@api.route(f"/api/{api_version}/users/<string:username>/achievements/", methods=['POST'])
+def attach_achievement(username: str):
     logger.debug('attach achievement')
     try:
         data = request.json
 
-        UserAchievementService().attach_achievement(data)
+        UserAchievementService().attach_achievement(data, username)
 
         return make_response('', 201)
     
@@ -57,7 +57,7 @@ def attach_achievement():
         db.session.rollback()
         return jsonify({'error': str(err)}), 500
 
-@api.route(f"/api/{api_version}/users/<string:username>/achievement/", methods=['GET'])
+@api.route(f"/api/{api_version}/users/<string:username>/achievements/", methods=['GET'])
 def get_users_achivement(username):
     logger.debug('get achievements for users')
 
@@ -68,7 +68,7 @@ def get_users_achivement(username):
     except Exception as err:
         logger.error(err)
 
-@api.route(f"/api/{api_version}/stats/max_achievements/")
+@api.route(f"/api/{api_version}/users/achievements-stats/max-count/")
 def get_user_with_max_achievements():
     logger.debug('get user with max achivements')
 
@@ -76,7 +76,7 @@ def get_user_with_max_achievements():
 
     return jsonify(result), 200
 
-@api.route(f"/api/{api_version}/stats/max_points/")
+@api.route(f"/api/{api_version}/users/achievements-stats/max-points/")
 def get_user_with_max_points():
     logger.debug('get user with max points')
 
@@ -84,7 +84,7 @@ def get_user_with_max_points():
 
     return jsonify(result), 200
 
-@api.route(f"/api/{api_version}/stats/max_min_difference/")
+@api.route(f"/api/{api_version}/users/achievements-stats/max-min-difference/")
 def get_user_with_min_max_difference():
     logger.debug('get user with max and min difference')
 
@@ -92,7 +92,7 @@ def get_user_with_min_max_difference():
 
     return jsonify(result), 200
 
-@api.route(f"/api/{api_version}/stats/streak_achievements/")
+@api.route(f"/api/{api_version}/users/achievements-stats/streak/")
 def get_user_with_streak_achievements():
     logger.debug('get user with streak')
 

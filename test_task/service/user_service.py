@@ -35,7 +35,7 @@ class UserService:
     
     def create_user(self, data: dict):
         try:
-            if data['language'] not in ['en', 'ru']:
+            if data['user_language'] not in ['en', 'ru']:
                 return jsonify({
                     "message": "Доступно только два языка en и ru"
                 })
@@ -50,7 +50,7 @@ class UserService:
             result = self.repo.find_one_with_relation({"username": username})
             achievements_list = [{
                 "username": user.username,
-                "language": user.language,
+                "user_language": user.user_language,
                 "achievement_name": translation.achievement_name,
                 "achievement_point": achievement.achievement_point,
                 "achievement_description": translation.achievement_description,

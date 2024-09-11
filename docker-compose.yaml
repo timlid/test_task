@@ -1,0 +1,52 @@
+services:
+  flask-server:
+    build: .
+    restart: always
+    ports:
+      - 8000:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    networks:
+      - flask-test
+
+  postgres:
+    image: postgres
+    restart: always
+    hostname: localhost
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - flask-test
+    healthcheck:
+      test: pg_isready -U ${DB_USER} -d ${DB_NAME}
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - flask-server
+    networks:
+      - flask-test
+
+volumes:
+  postgres:
+
+networks:
+  flask-test:
+    external: true

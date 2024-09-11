@@ -7,8 +7,8 @@ class UserAchievementRepository():
         self.model = UserAchievement
         self.db = db
 
-    def attach_one(self, data: dict):
-        user_id = select(User).where(User.username == data['username'])
+    def attach_one(self, data: dict, username: str):
+        user_id = select(User).where(User.username == username)
         achievement_id = select(AchievementTranslate).where(AchievementTranslate.achievement_name == data['achievement_name'])
 
         user_result = db.session.execute(user_id)
