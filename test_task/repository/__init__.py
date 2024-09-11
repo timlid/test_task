@@ -1,1 +1,3 @@
 from repository.user_repository import UserRepository, DatabaseRequestError
+from repository.achiviement_repository import AchievementRepository
+from repository.user_achievement_repository import UserAchievementRepository

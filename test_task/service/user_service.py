@@ -44,3 +44,18 @@ class UserService:
 
         except DatabaseRequestError as err:
             raise CreateUserError(err)
+        
+    def get_users_achievement(self, username: str) -> dict:
+        try:
+            result = self.repo.find_one_with_relation({"username": username})
+            achievements_list = [{
+                "username": user.username,
+                "language": user.language,
+                "achievement_name": translation.achievement_name,
+                "achievement_point": achievement.achievement_point,
+                "achievement_description": translation.achievement_description,
+                "awarded_at": achievement.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            } for achievement, translation, user in result]
+            return achievements_list
+        except DatabaseRequestError as err:
+            raise GetUserError(err)

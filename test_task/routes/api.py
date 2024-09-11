@@ -1,10 +1,11 @@
-from flask import Blueprint, jsonify, request
-from database.models import User, Achievement, UserAchievement
+from flask import Blueprint, jsonify, request, make_response
 from sqlalchemy import select, func
 from loguru import logger
 
 from database import db
-from service import UserService
+from service import UserService, AchievementService, UserAchievementService
+from database.models import User, Achievement, UserAchievement
+
 
 api = Blueprint('api', __name__)
 
@@ -17,9 +18,7 @@ def create_user():
 
     UserService().create_user(data)
 
-    return jsonify({
-            'message': 'User created successfully',
-        }), 200
+    return make_response('', 201)
 
 @api.route(f'/api/{api_version}/users/<string:username>', methods=['GET'])
 def get_user_by_username(username: str):
@@ -36,23 +35,9 @@ def create_achievement():
         logger.debug('create achievement')
         data = request.json
 
-        new_achievement = Achievement(
-            achievement_name=data['achievement_name'],
-            achievement_description=data['achievement_description'],
-            achievement_point=data['achievement_point'],
-            created_at=func.now(),
-            updated_at=func.now()
-        )
+        AchievementService().create_achievement(data)
 
-        db.session.add(new_achievement)
-        db.session.commit()
-
-        return jsonify({
-                'message': 'Achievement created successfully',
-                'achievement_name': new_achievement.achievement_name,
-                'achievement_description': new_achievement.achievement_description,
-                'achievement_point': new_achievement.achievement_point
-            }), 201
+        return make_response('', 201)
 
     except Exception as err:
         db.session.rollback()
@@ -64,28 +49,21 @@ def attach_achievement():
     try:
         data = request.json
 
-        user_id = select(User).where(User.username == data['username'])
-        achievement_id = select(Achievement).where(Achievement.achievement_name == data['achievement_name'])
+        UserAchievementService().attach_achievement(data)
 
-        user_result = db.session.execute(user_id)
-        achievement_result = db.session.execute(achievement_id)
-
-        new_user_achievement = UserAchievement(
-            user_id=user_result.one()[0].to_dict()['user_id'],
-            achievement_id=achievement_result.one()[0].to_dict()['achievement_id'],
-            created_at=func.now(),
-            updated_at=func.now()
-        )
-
-        db.session.add(new_user_achievement)
-        db.session.commit()
-
-        return jsonify({
-            "message": "Sucessfuly created",
-            "user_id": new_user_achievement.user_id,
-            "achievement_id": new_user_achievement.achievement_id
-        }), 201
+        return make_response('', 201)
     
     except Exception as err:
         db.session.rollback()
         return jsonify({'error': str(err)}), 500
+
+@api.route(f"/api/{api_version}/users/<string:username>/achievement/", methods=['GET'])
+def get_users_achivement(username):
+    logger.debug('get achievements for users')
+
+    try:
+        result = UserService().get_users_achievement(username)
+
+        return jsonify(result), 200
+    except Exception as err:
+        logger.error(err)
