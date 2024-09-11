@@ -67,3 +67,35 @@ def get_users_achivement(username):
         return jsonify(result), 200
     except Exception as err:
         logger.error(err)
+
+@api.route(f"/api/{api_version}/stats/max_achievements/")
+def get_user_with_max_achievements():
+    logger.debug('get user with max achivements')
+
+    result = UserService().get_user_with_max_achievements()
+
+    return jsonify(result), 200
+
+@api.route(f"/api/{api_version}/stats/max_points/")
+def get_user_with_max_points():
+    logger.debug('get user with max points')
+
+    result = UserService().get_user_with_max_points()
+
+    return jsonify(result), 200
+
+@api.route(f"/api/{api_version}/stats/max_min_difference/")
+def get_user_with_min_max_difference():
+    logger.debug('get user with max and min difference')
+
+    result = UserService().get_user_with_min_max_difference()
+
+    return jsonify(result), 200
+
+@api.route(f"/api/{api_version}/stats/streak_achievements/")
+def get_user_with_streak_achievements():
+    logger.debug('get user with streak')
+
+    result = UserService().get_user_with_streak_achievements()
+
+    return jsonify(result), 200

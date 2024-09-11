@@ -1,4 +1,4 @@
-from sqlalchemy import select, and_, func
+from sqlalchemy import select, and_, func, desc
 from loguru import logger
 
 
@@ -60,7 +60,7 @@ class UserRepository:
             logger.error(err)
             raise DatabaseRequestError(err)
         
-    def find_one_with_relation(self, data: dict):
+    def find_one_with_relation(self, data: dict) -> dict:
         user = self.find_one(data)
 
         user_achievements = db.session.query(Achievement, AchievementTranslate, User)\
@@ -71,3 +71,71 @@ class UserRepository:
             .all()
         
         return user_achievements
+    
+    def find_max_count_achievements(self) -> dict:
+        user = db.session.query(
+            User, func.count(UserAchievement.achievement_id).label('total_achievements')
+        ).join(UserAchievement).group_by(User.user_id).order_by(desc('total_achievements')).first()
+
+        return {
+            "user_id": user[0].user_id,
+            "username": user[0].username,
+            "total_achievements": user[1]
+            }
+
+    def find_max_count_points(self) -> dict:
+        user = db.session.query(
+            User, func.sum(Achievement.achievement_point).label('total_points')
+        )\
+        .join(UserAchievement, User.user_id == UserAchievement.user_id)\
+        .join(Achievement, Achievement.achievement_id == UserAchievement.achievement_id)\
+        .group_by(User.user_id).order_by(desc('total_points'))\
+        .first()
+
+        return {
+            "user_id": user[0].user_id,
+            "username": user[0].username,
+            "total_points": user[1]
+        }
+    
+    def find_mix_max_difference(self) -> dict:
+        user_points = db.session.query(
+            User.user_id, User.username, func.sum(Achievement.achievement_point).label('total_points')
+        )\
+        .join(UserAchievement, User.user_id == UserAchievement.user_id)\
+        .join(Achievement, Achievement.achievement_id == UserAchievement.achievement_id)\
+        .group_by(User.user_id).all()
+
+        users_data = [
+            {
+                "user_id": user_id,
+                "username": username,
+                "total_points": total_points
+            }
+            for user_id, username, total_points in user_points
+        ]
+
+        sorted_users = sorted(users_data, key=lambda x: x['total_points'])
+
+        max_diff = sorted_users[-1]['total_points'] - sorted_users[0]['total_points']
+        return {
+                "max_difference": max_diff,
+                "users_with_max_difference": {
+                    "max_points_user": sorted_users[-1],
+                    "min_points_user": sorted_users[0]
+                }
+        }
+    
+    def find_streak_with_achievement(self):
+        users_with_streak = db.session.query(
+            User.user_id, User.username
+        ).join(UserAchievement).group_by(User.user_id).having(
+            func.count(func.distinct(func.date(UserAchievement.created_at))) >= 7
+        ).all()
+
+        result = [{
+            "user_id": user.user_id,
+            "username": user.username
+        } for user in users_with_streak]
+
+        return result

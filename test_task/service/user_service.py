@@ -59,3 +59,15 @@ class UserService:
             return achievements_list
         except DatabaseRequestError as err:
             raise GetUserError(err)
+        
+    def get_user_with_max_achievements(self) -> dict:
+        return self.repo.find_max_count_achievements()
+    
+    def get_user_with_max_points(self) -> dict:
+        return self.repo.find_max_count_points()
+    
+    def get_user_with_min_max_difference(self) -> dict:
+        return self.repo.find_mix_max_difference()
+    
+    def get_user_with_streak_achievements(self) -> dict:
+        return self.repo.find_streak_with_achievement()
